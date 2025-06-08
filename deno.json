@@ -1,4 +1,7 @@
 {
+  "name": "@cong/gemini-mcp",
+  "version": "0.1.0",
+  "exports": "./src/server.ts",
   "tasks": {
     "dev": "deno run --allow-net --allow-env --watch src/server.ts",
     "start": "deno run --allow-net --allow-env src/server.ts",
