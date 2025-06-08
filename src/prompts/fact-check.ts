@@ -1,5 +1,11 @@
 import { Prompt } from "@modelcontextprotocol/sdk/types.js";
 
+/**
+ * MCP Prompt definition for fact-checking claims.
+ * This prompt guides the AI to verify a given claim, optionally considering
+ * additional context, and to provide supporting or contradictory evidence.
+ * It utilizes the `ask_gemini` tool for execution.
+ */
 export const factCheckPrompt: Prompt = {
   name: "fact_check",
   description: "Verify claims and statements with current information and reliable sources",
@@ -17,6 +23,15 @@ export const factCheckPrompt: Prompt = {
   ],
 };
 
+/**
+ * Builds the arguments for the `ask_gemini` tool based on the fact-check prompt inputs.
+ *
+ * @param args - An object containing the arguments for the fact-check prompt.
+ * @param args.claim - The claim, statement, or information to fact-check.
+ * @param [args.context] - Optional additional context about the claim.
+ * @returns An object specifying the tool to call (`ask_gemini`) and the arguments for it,
+ *          including the constructed prompt, temperature, and max_tokens.
+ */
 export function buildFactCheckPrompt(args: Record<string, unknown>): {
   tool: string;
   arguments: Record<string, unknown>;

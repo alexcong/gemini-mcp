@@ -1,5 +1,11 @@
 import { Prompt } from "@modelcontextprotocol/sdk/types.js";
 
+/**
+ * MCP Prompt definition for analyzing technical documentation.
+ * This prompt guides the AI to analyze specified technical documents (via URLs)
+ * and answer a question, optionally tailoring the explanation to a complexity level.
+ * It utilizes the `ask_gemini` tool for execution.
+ */
 export const technicalDocumentationPrompt: Prompt = {
   name: "technical_documentation",
   description: "Analyze technical documentation and provide clear explanations",
@@ -22,6 +28,17 @@ export const technicalDocumentationPrompt: Prompt = {
   ],
 };
 
+/**
+ * Builds the arguments for the `ask_gemini` tool based on the technical documentation prompt inputs.
+ *
+ * @param args - An object containing the arguments for the technical documentation prompt.
+ * @param args.documentation_urls - Array of URLs to the technical documentation.
+ * @param args.question - Specific question about the documentation.
+ * @param [args.complexity_level] - Optional target complexity level for the explanation (e.g., "beginner").
+ * @returns An object specifying the tool to call (`ask_gemini`) and the arguments for it,
+ *          including the constructed prompt, temperature, and max_tokens.
+ * @throws {Error} If `documentation_urls` is not provided.
+ */
 export function buildTechnicalDocumentationPrompt(args: Record<string, unknown>): {
   tool: string;
   arguments: Record<string, unknown>;
@@ -29,6 +46,9 @@ export function buildTechnicalDocumentationPrompt(args: Record<string, unknown>)
   const { documentation_urls, question, complexity_level } = args;
   
   if (!documentation_urls) {
+    // This check is good, but MCP arguments are typically validated by the framework
+    // based on the `required: true` in the prompt definition.
+    // However, belt-and-suspenders is fine.
     throw new Error("documentation_urls is required");
   }
   

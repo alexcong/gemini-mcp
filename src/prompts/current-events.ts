@@ -1,5 +1,11 @@
 import { Prompt } from "@modelcontextprotocol/sdk/types.js";
 
+/**
+ * MCP Prompt definition for fetching current events information.
+ * This prompt guides the AI to gather up-to-date news and developments
+ * on a specified topic, optionally filtered by time period and region.
+ * It utilizes the `ask_gemini` tool for execution.
+ */
 export const currentEventsPrompt: Prompt = {
   name: "current_events",
   description: "Get up-to-date information on recent developments and news",
@@ -22,6 +28,16 @@ export const currentEventsPrompt: Prompt = {
   ],
 };
 
+/**
+ * Builds the arguments for the `ask_gemini` tool based on the current events prompt inputs.
+ *
+ * @param args - An object containing the arguments for the current events prompt.
+ * @param args.topic - The topic or event to get current information about.
+ * @param [args.time_period] - Optional time period to focus on (e.g., "last week").
+ * @param [args.region] - Optional geographic region (e.g., "US").
+ * @returns An object specifying the tool to call (`ask_gemini`) and the arguments for it,
+ *          including the constructed prompt, temperature, and max_tokens.
+ */
 export function buildCurrentEventsPrompt(args: Record<string, unknown>): {
   tool: string;
   arguments: Record<string, unknown>;

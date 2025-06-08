@@ -16,9 +16,39 @@ import { technicalDocumentationPrompt, buildTechnicalDocumentationPrompt } from 
 import { compareSourcesPrompt, buildCompareSourcesPrompt } from "./prompts/compare-sources.ts";
 import { factCheckPrompt, buildFactCheckPrompt } from "./prompts/fact-check.ts";
 
+import { configureLogging, getLogger } from "./logging.ts";
+
+/**
+ * Defines the signature for functions that build prompt structures.
+ * @param args - A record of arguments, typically from an MCP prompt request.
+ * @returns An object containing the tool name and the arguments for that tool.
+ */
+type PromptBuilderFunction = (args: Record<string, any>) => { tool: string; arguments: Record<string, any>; };
+
+/**
+ * A registry mapping prompt names to their respective builder functions.
+ * This allows for dynamic dispatch in the `GetPromptRequestSchema` handler.
+ */
+const promptBuilders = new Map<string, PromptBuilderFunction>([
+  ["research_analysis", buildResearchAnalysisPrompt],
+  ["current_events", buildCurrentEventsPrompt],
+  ["technical_documentation", buildTechnicalDocumentationPrompt],
+  ["compare_sources", buildCompareSourcesPrompt],
+  ["fact_check", buildFactCheckPrompt],
+]);
+
+/**
+ * Implements the Model Context Protocol (MCP) server for Gemini AI capabilities.
+ * This class sets up handlers for various MCP requests, such as listing tools,
+ * calling tools, listing prompts, and getting specific prompts.
+ */
 class GeminiMcpServer {
   private server: Server;
 
+  /**
+   * Initializes a new instance of the `GeminiMcpServer`.
+   * It creates an MCP `Server` and sets up all necessary request handlers.
+   */
   constructor() {
     this.server = new Server(
       {
@@ -36,6 +66,12 @@ class GeminiMcpServer {
     this.setupHandlers();
   }
 
+  /**
+   * Sets up the request handlers for the MCP server.
+   * This includes handlers for listing tools, calling tools,
+   * listing prompts, and retrieving specific prompts.
+   * @private
+   */
   private setupHandlers(): void {
     // Tools
     this.server.setRequestHandler(ListToolsRequestSchema, () => {
@@ -47,6 +83,7 @@ class GeminiMcpServer {
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
 
+      const logger = getLogger("server"); // Get server logger
       try {
         switch (name) {
           case "ask_gemini":
@@ -56,17 +93,22 @@ class GeminiMcpServer {
             throw new Error(`Unknown tool: ${name}`);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error
-          ? error.message
-          : "Unknown error occurred";
+        logger.error(`Error processing tool '${name}' with args: ${JSON.stringify(args)}`, error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+        let errorCode = "TOOL_EXECUTION_FAILED";
+        if (errorMessage.startsWith("Unknown tool:")) {
+          errorCode = "UNKNOWN_TOOL";
+        }
+
         return {
           content: [
             {
               type: "text",
-              text: `Error: ${errorMessage}`,
+              text: `Error processing tool '${name}': ${errorMessage}`,
             },
           ],
           isError: true,
+          errorCode: errorCode,
         };
       }
     });
@@ -88,26 +130,11 @@ class GeminiMcpServer {
       const { name, arguments: args } = request.params;
 
       try {
-        let toolCall;
-        switch (name) {
-          case "research_analysis":
-            toolCall = buildResearchAnalysisPrompt(args || {});
-            break;
-          case "current_events":
-            toolCall = buildCurrentEventsPrompt(args || {});
-            break;
-          case "technical_documentation":
-            toolCall = buildTechnicalDocumentationPrompt(args || {});
-            break;
-          case "compare_sources":
-            toolCall = buildCompareSourcesPrompt(args || {});
-            break;
-          case "fact_check":
-            toolCall = buildFactCheckPrompt(args || {});
-            break;
-          default:
-            throw new Error(`Unknown prompt: ${name}`);
+        const builder = promptBuilders.get(name);
+        if (!builder) {
+          throw new Error(`Unknown prompt: ${name}`);
         }
+        const toolCall = builder(args || {});
 
         return {
           description: `Prompt for ${name}`,
@@ -122,26 +149,52 @@ class GeminiMcpServer {
           ],
         };
       } catch (error) {
-        throw new Error(`Failed to generate prompt: ${error instanceof Error ? error.message : String(error)}`);
+        const logger = getLogger("server"); // Get server logger
+        logger.error(`Error processing prompt '${name}' with args: ${JSON.stringify(args)}`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        let specificMessage = `Failed to generate prompt '${name}'`;
+        if (errorMessage.startsWith("Unknown prompt:")) {
+          specificMessage = errorMessage;
+        } else if (error instanceof Error) {
+          // Assuming other errors are from prompt builder functions
+          specificMessage = `Error in prompt builder for '${name}': ${errorMessage}`;
+        }
+        // The server framework should handle catching this error and sending an appropriate response.
+        throw new Error(specificMessage);
       }
     });
   }
 
+  /**
+   * Starts the MCP server and connects it to a transport (StdioServerTransport).
+   * It also logs server startup information, including API key status.
+   * @returns A promise that resolves when the server is connected and running.
+   */
   async run(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
 
+    const logger = getLogger("server"); // Use server logger
     const hasApiKey = !!Deno.env.get("GEMINI_API_KEY");
-    console.error(`Gemini MCP Server running on stdio (API Key: ${hasApiKey ? "configured" : "NOT SET"})`);
+    logger.info(`Gemini MCP Server running on stdio (API Key: ${hasApiKey ? "configured" : "NOT SET"})`);
   }
 }
 
+/**
+ * Main entry point for the application.
+ * It configures logging, checks for the required `GEMINI_API_KEY` environment variable,
+ * and starts the `GeminiMcpServer`.
+ * Global error handlers are also set up here to catch unhandled promise rejections and exceptions.
+ */
 async function main(): Promise<void> {
+  await configureLogging(); // Initialize logging
+  const logger = getLogger("default"); // Default logger for main setup
+
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) {
-    console.error("Error: GEMINI_API_KEY environment variable is required");
-    console.error("Please set your Gemini API key:");
-    console.error("export GEMINI_API_KEY=your_api_key_here");
+    logger.error("Error: GEMINI_API_KEY environment variable is required");
+    logger.error("Please set your Gemini API key:");
+    logger.error("export GEMINI_API_KEY=your_api_key_here");
     Deno.exit(1);
   }
 
@@ -150,8 +203,27 @@ async function main(): Promise<void> {
 }
 
 if (import.meta.main) {
+  // It's better to configure logging inside main, after it's called.
+  // However, global handlers need to be set up early.
+  // For simplicity with @std/log, we'll rely on configureLogging() in main().
+  // If these global handlers trigger before logging is configured, they'll use console.error.
+  // For a more robust solution, one might initialize a very basic logger for these global handlers
+  // or ensure configureLogging() is called even earlier, if possible.
+
+  globalThis.addEventListener("unhandledrejection", (event) => {
+    // Ensure event.reason is an Error for better logging, otherwise convert
+    const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+    getLogger("default").error("Unhandled promise rejection:", error);
+  });
+
+  globalThis.addEventListener("error", (event) => {
+    // event.error is usually an Error object
+    getLogger("default").error("Uncaught exception:", event.error);
+  });
+
   main().catch((error) => {
-    console.error("Server error:", error);
-    Deno.exit(1);
+    const logger = getLogger("default"); // Get logger, might be uninitialized if main itself fails early
+    logger.critical("Critical server error in main execution:", error);
+    Deno.exit(1); // Ensure logging is flushed if possible, though Deno usually handles it.
   });
 }

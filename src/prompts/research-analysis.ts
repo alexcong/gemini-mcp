@@ -1,5 +1,11 @@
 import { Prompt } from "@modelcontextprotocol/sdk/types.js";
 
+/**
+ * MCP Prompt definition for comprehensive research analysis.
+ * This prompt guides the AI to conduct in-depth research on a given topic,
+ * optionally focusing on specific areas and analyzing provided URLs.
+ * It utilizes the `ask_gemini` tool for execution.
+ */
 export const researchAnalysisPrompt: Prompt = {
   name: "research_analysis",
   description: "Research a topic comprehensively with automatic web search and URL analysis",
@@ -22,6 +28,16 @@ export const researchAnalysisPrompt: Prompt = {
   ],
 };
 
+/**
+ * Builds the arguments for the `ask_gemini` tool based on the research analysis prompt inputs.
+ *
+ * @param args - An object containing the arguments for the research analysis prompt.
+ * @param args.topic - The main research topic or question.
+ * @param [args.urls] - Optional array of URLs to include in the analysis.
+ * @param [args.focus_areas] - Optional specific aspects to focus on.
+ * @returns An object specifying the tool to call (`ask_gemini`) and the arguments for it,
+ *          including the constructed prompt, temperature, and max_tokens.
+ */
 export function buildResearchAnalysisPrompt(args: Record<string, unknown>): {
   tool: string;
   arguments: Record<string, unknown>;

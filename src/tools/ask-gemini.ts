@@ -12,6 +12,12 @@ const AskGeminiArgsSchema = z.object({
   ),
 });
 
+/**
+ * MCP Tool definition for the `ask_gemini` tool.
+ * This tool allows users to interact with the Google Gemini model.
+ * It supports providing a prompt, and optionally temperature and max_tokens.
+ * URLs included in the prompt text are automatically analyzed by Gemini.
+ */
 export const askGeminiTool: Tool = {
   name: "ask_gemini",
   description:
@@ -43,6 +49,17 @@ export const askGeminiTool: Tool = {
   },
 };
 
+/**
+ * Handles the execution of the `ask_gemini` tool.
+ * It validates the input arguments, calls the `GeminiClient` to generate content,
+ * and formats the response, including any sources or search suggestions.
+ *
+ * @param args - The arguments for the `ask_gemini` tool, expected to conform to `AskGeminiArgsSchema`.
+ * @returns A promise that resolves to an MCP-compatible tool response object,
+ *          containing the formatted text response from Gemini.
+ * @throws {Error} If argument validation fails or if the Gemini API call fails.
+ *                 ZodErrors from validation are thrown directly.
+ */
 export async function handleAskGemini(
   args: unknown,
 ): Promise<{ content: Array<{ type: "text"; text: string }> }> {

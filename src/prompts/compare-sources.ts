@@ -1,5 +1,11 @@
 import { Prompt } from "@modelcontextprotocol/sdk/types.js";
 
+/**
+ * MCP Prompt definition for comparing information across multiple sources.
+ * This prompt guides the AI to analyze and compare content from specified URLs
+ * on a given topic, optionally focusing on specific comparison criteria.
+ * It utilizes the `ask_gemini` tool for execution.
+ */
 export const compareSourcesPrompt: Prompt = {
   name: "compare_sources",
   description: "Compare information across multiple sources and provide analysis",
@@ -22,6 +28,17 @@ export const compareSourcesPrompt: Prompt = {
   ],
 };
 
+/**
+ * Builds the arguments for the `ask_gemini` tool based on the compare sources prompt inputs.
+ *
+ * @param args - An object containing the arguments for the compare sources prompt.
+ * @param args.topic - The topic or subject to compare across sources.
+ * @param args.source_urls - Array of URLs to the different sources for comparison.
+ * @param [args.comparison_criteria] - Optional specific aspects to compare (e.g., "methodology").
+ * @returns An object specifying the tool to call (`ask_gemini`) and the arguments for it,
+ *          including the constructed prompt, temperature, and max_tokens.
+ * @throws {Error} If `source_urls` is not provided.
+ */
 export function buildCompareSourcesPrompt(args: Record<string, unknown>): {
   tool: string;
   arguments: Record<string, unknown>;
@@ -29,6 +46,8 @@ export function buildCompareSourcesPrompt(args: Record<string, unknown>): {
   const { topic, source_urls, comparison_criteria } = args;
   
   if (!source_urls) {
+    // This check is good, but MCP arguments are typically validated by the framework
+    // based on the `required: true` in the prompt definition.
     throw new Error("source_urls is required");
   }
   

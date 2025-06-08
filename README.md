@@ -38,6 +38,15 @@ cd gemini-mcp
 export GEMINI_API_KEY=your_api_key_here
 ```
 
+## Configuration
+
+The server can be configured using the following environment variables:
+
+- **`GEMINI_API_KEY`** (required): Your Google Gemini API key. This is essential for the server to function.
+- **`GEMINI_MODEL_NAME`** (optional): Specify the Gemini model to use.
+    - If not set, defaults to `"gemini-2.5-pro-preview-06-05"`.
+    - Example: `export GEMINI_MODEL_NAME="gemini-pro"`
+
 ## Usage
 
 ### Start the Server
@@ -209,7 +218,7 @@ If you get an "API Key not found" error:
    npx @modelcontextprotocol/inspector src/server.ts
    ```
 
-4. **Check the server logs**: When the server starts, it will show `(API Key: configured)` to confirm your key is loaded.
+4. **Check the server logs**: When the server starts, it will show `(API Key: configured)` to confirm your key is loaded. The server now uses structured logging, so detailed error messages and operational logs will be printed to the console. Check these logs for more information if you encounter issues.
 
 
 ## Support
