@@ -18,7 +18,7 @@ Deno.test("Server - environment validation", () => {
   Deno.env.delete("GEMINI_API_KEY");
 
   try {
-    const cmd = new Deno.Command(Deno.execPath(), {
+    const cmd = new Deno.Command("deno", {
       args: ["run", "--allow-env", "src/server.ts"],
       stdout: "piped",
       stderr: "piped",
