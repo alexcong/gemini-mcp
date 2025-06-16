@@ -43,14 +43,13 @@ export class GeminiClient {
 
       const generationConfig: any = {
         temperature: request.temperature ?? 0.7,
-        thinkingConfig: {
-          includeThoughts: true,
-        },
       };
 
       // Add thinkingBudget if provided
       if (request.thinkingBudget !== undefined) {
-        generationConfig.thinkingConfig.thinkingBudget = request.thinkingBudget;
+        generationConfig.thinkingConfig = {
+          thinkingBudget: request.thinkingBudget,
+        };
       }
 
       const result = await model.generateContent({
