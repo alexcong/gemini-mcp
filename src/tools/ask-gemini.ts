@@ -72,17 +72,6 @@ export async function handleAskGemini(
       }
     }
 
-    // Add search suggestions if available
-    if (
-      response.metadata?.searchSuggestions &&
-      response.metadata.searchSuggestions.length > 0
-    ) {
-      formattedResponse += "\n**Related searches:**\n";
-      response.metadata.searchSuggestions.forEach((suggestion) => {
-        formattedResponse += `• ${suggestion}\n`;
-      });
-    }
-
     return {
       content: [
         {

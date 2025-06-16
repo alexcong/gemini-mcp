@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const ConfigSchema = z.object({
   apiKey: z.string().min(1, "API key is required"),
+  model: z.string().min(1, "Model name is required"),
 });
 
 export interface GeminiRequest {
@@ -15,25 +16,27 @@ export interface GeminiResponse {
   text: string;
   metadata?: {
     sources?: string[];
-    searchSuggestions?: string[];
   };
 }
 
 export class GeminiClient {
   private genAI: GoogleGenerativeAI;
+  private model: string;
 
   constructor(apiKey?: string) {
     const config = ConfigSchema.parse({
       apiKey: apiKey || Deno.env.get("GEMINI_API_KEY"),
+      model: Deno.env.get("GEMINI_MODEL"),
     });
 
     this.genAI = new GoogleGenerativeAI(config.apiKey);
+    this.model = config.model;
   }
 
   async generate(request: GeminiRequest): Promise<GeminiResponse> {
     try {
       const model = this.genAI.getGenerativeModel({
-        model: "gemini-2.5-pro-preview-06-05",
+        model: this.model,
         // deno-lint-ignore no-explicit-any
         tools: [{ urlContext: {} }, { googleSearch: {} }] as any,
       });
@@ -54,7 +57,7 @@ export class GeminiClient {
 
       // Extract sources from both URL context and grounding metadata
       const sources: string[] = [];
-      
+
       // URL context sources
       if (metadata?.urlContextMetadata) {
         if (Array.isArray(metadata.urlContextMetadata)) {
@@ -65,7 +68,7 @@ export class GeminiClient {
           sources.push(metadata.urlContextMetadata.url);
         }
       }
-      
+
       // Grounding metadata sources
       if (metadata?.groundingMetadata?.groundingChunks) {
         metadata.groundingMetadata.groundingChunks.forEach((chunk: any) => {
@@ -77,9 +80,6 @@ export class GeminiClient {
         text: response.text(),
         metadata: {
           sources: [...new Set(sources)], // Remove duplicates
-          searchSuggestions: metadata?.groundingMetadata?.searchEntryPoint?.renderedContent
-            ? [metadata.groundingMetadata.searchEntryPoint.renderedContent]
-            : [],
         },
       };
     } catch (error) {

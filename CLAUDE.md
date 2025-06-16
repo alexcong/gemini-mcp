@@ -24,10 +24,11 @@ Google Gemini AI tools:
 
 ## Environment Setup
 
-**Required**: Set `GEMINI_API_KEY` environment variable before running:
+**Required**: Set both `GEMINI_API_KEY` and `GEMINI_MODEL` environment variables before running:
 
 ```bash
 export GEMINI_API_KEY=your_api_key_here
+export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
 deno task dev
 ```
 
