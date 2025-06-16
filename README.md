@@ -32,10 +32,11 @@ git clone <repository-url>
 cd gemini-mcp
 ```
 
-2. Set your Gemini API key:
+2. Set your environment variables:
 
 ```bash
 export GEMINI_API_KEY=your_api_key_here
+export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
 ```
 
 ## Usage
@@ -43,8 +44,9 @@ export GEMINI_API_KEY=your_api_key_here
 ### Start the Server
 
 ```bash
-# Set your API key first
+# Set your environment variables first
 export GEMINI_API_KEY=your_api_key_here
+export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
 
 # Development mode (with watch)
 deno task dev
@@ -55,11 +57,12 @@ deno task start
 
 ### Testing with MCP Inspector
 
-To test the server with the MCP Inspector, make sure your API key is set:
+To test the server with the MCP Inspector, make sure your environment variables are set:
 
 ```bash
-# Set API key in your shell
+# Set environment variables in your shell
 export GEMINI_API_KEY=your_api_key_here
+export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
 
 # Install MCP Inspector if you haven't already
 npm install -g @modelcontextprotocol/inspector
@@ -68,7 +71,7 @@ npm install -g @modelcontextprotocol/inspector
 npx @modelcontextprotocol/inspector src/server.ts
 ```
 
-**Important**: The environment variable must be set in the same shell where you run the MCP Inspector.
+**Important**: The environment variables must be set in the same shell where you run the MCP Inspector.
 
 ### Run Tests
 
@@ -194,22 +197,24 @@ This project uses Deno with TypeScript. Key development commands:
 
 ## Troubleshooting
 
-### API Key Issues
+### Environment Variable Issues
 
-If you get an "API Key not found" error:
+If you get environment variable errors:
 
-1. **Verify your API key is set**:
+1. **Verify your environment variables are set**:
    ```bash
    echo $GEMINI_API_KEY
+   echo $GEMINI_MODEL
    ```
 
-2. **For MCP Inspector testing**, ensure the key is set in the same terminal:
+2. **For MCP Inspector testing**, ensure both variables are set in the same terminal:
    ```bash
    export GEMINI_API_KEY=your_api_key_here
+   export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
    npx @modelcontextprotocol/inspector src/server.ts
    ```
 
-4. **Check the server logs**: When the server starts, it will show `(API Key: configured)` to confirm your key is loaded.
+3. **Check the server logs**: When the server starts, it will show `(API Key: configured)` to confirm your key is loaded.
 
 
 ## Support
@@ -240,7 +245,8 @@ Edit your Claude configuration file:
         "jsr:@cong/gemini-mcp"
       ],
       "env": {
-        "GEMINI_API_KEY": "your_api_key_here"
+        "GEMINI_API_KEY": "your_api_key_here",
+        "GEMINI_MODEL": "gemini-2.5-pro-preview-06-05"
       }
     }
   }
@@ -263,7 +269,8 @@ If you're running from source code:
         "src/server.ts"
       ],
       "env": {
-        "GEMINI_API_KEY": "your_api_key_here"
+        "GEMINI_API_KEY": "your_api_key_here",
+        "GEMINI_MODEL": "gemini-2.5-pro-preview-06-05"
       }
     }
   }
