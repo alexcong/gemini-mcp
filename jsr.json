@@ -1,6 +1,6 @@
 {
   "name": "@cong/gemini-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Model Context Protocol server for Google Gemini AI with web search and URL analysis capabilities",
   "license": "MIT",
   "repository": {
