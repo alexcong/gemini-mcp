@@ -21,26 +21,33 @@ Deno.test("GeminiClient - constructor validates API key", () => {
 
 Deno.test("GeminiClient - constructor uses environment variable", () => {
   Deno.env.set("GEMINI_API_KEY", "test-key");
+  Deno.env.set("GEMINI_MODEL", "test-model");
   const client = new GeminiClient();
   assertEquals(typeof client, "object");
   Deno.env.delete("GEMINI_API_KEY");
+  Deno.env.delete("GEMINI_MODEL");
 });
 
 Deno.test("GeminiClient - constructor uses provided API key", () => {
+  Deno.env.set("GEMINI_MODEL", "test-model");
   const client = new GeminiClient("test-api-key");
   assertEquals(typeof client, "object");
+  Deno.env.delete("GEMINI_MODEL");
 });
 
 Deno.test("GeminiClient - generate validates input", async () => {
+  Deno.env.set("GEMINI_MODEL", "test-model");
   const client = new GeminiClient("test-key");
 
   await assertRejects(
     () => client.generate({ prompt: "" }),
     Error,
   );
+  Deno.env.delete("GEMINI_MODEL");
 });
 
 Deno.test("GeminiClient - generate accepts valid input", async () => {
+  Deno.env.set("GEMINI_MODEL", "test-model");
   const client = new GeminiClient("test-key");
 
   try {
@@ -52,4 +59,5 @@ Deno.test("GeminiClient - generate accepts valid input", async () => {
       true,
     );
   }
+  Deno.env.delete("GEMINI_MODEL");
 });

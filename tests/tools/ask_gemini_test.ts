@@ -66,6 +66,7 @@ Deno.test("handleAskGemini - validates max_tokens range", async () => {
 
 Deno.test("handleAskGemini - accepts valid arguments without URLs", async () => {
   Deno.env.set("GEMINI_API_KEY", "test-key");
+  Deno.env.set("GEMINI_MODEL", "test-model");
 
   try {
     await handleAskGemini({
@@ -82,10 +83,12 @@ Deno.test("handleAskGemini - accepts valid arguments without URLs", async () => 
   }
 
   Deno.env.delete("GEMINI_API_KEY");
+  Deno.env.delete("GEMINI_MODEL");
 });
 
 Deno.test("handleAskGemini - accepts valid arguments with URLs in prompt", async () => {
   Deno.env.set("GEMINI_API_KEY", "test-key");
+  Deno.env.set("GEMINI_MODEL", "test-model");
 
   try {
     await handleAskGemini({
@@ -102,10 +105,12 @@ Deno.test("handleAskGemini - accepts valid arguments with URLs in prompt", async
   }
 
   Deno.env.delete("GEMINI_API_KEY");
+  Deno.env.delete("GEMINI_MODEL");
 });
 
 Deno.test("handleAskGemini - accepts minimal valid arguments", async () => {
   Deno.env.set("GEMINI_API_KEY", "test-key");
+  Deno.env.set("GEMINI_MODEL", "test-model");
 
   try {
     await handleAskGemini({
@@ -120,4 +125,5 @@ Deno.test("handleAskGemini - accepts minimal valid arguments", async () => {
   }
 
   Deno.env.delete("GEMINI_API_KEY");
+  Deno.env.delete("GEMINI_MODEL");
 });

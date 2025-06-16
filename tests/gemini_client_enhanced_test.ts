@@ -2,15 +2,18 @@ import { assertEquals, assertRejects } from "@std/assert";
 import { GeminiClient } from "../src/gemini-client.ts";
 
 Deno.test("GeminiClient - generate validates input", async () => {
+  Deno.env.set("GEMINI_MODEL", "test-model");
   const client = new GeminiClient("test-key");
 
   await assertRejects(
     () => client.generate({ prompt: "" }),
     Error,
   );
+  Deno.env.delete("GEMINI_MODEL");
 });
 
 Deno.test("GeminiClient - generate accepts valid request without URLs", async () => {
+  Deno.env.set("GEMINI_MODEL", "test-model");
   const client = new GeminiClient("test-key");
 
   try {
@@ -26,9 +29,11 @@ Deno.test("GeminiClient - generate accepts valid request without URLs", async ()
       true,
     );
   }
+  Deno.env.delete("GEMINI_MODEL");
 });
 
 Deno.test("GeminiClient - generate accepts valid request with URLs in prompt", async () => {
+  Deno.env.set("GEMINI_MODEL", "test-model");
   const client = new GeminiClient("test-key");
 
   try {
@@ -44,9 +49,11 @@ Deno.test("GeminiClient - generate accepts valid request with URLs in prompt", a
       true,
     );
   }
+  Deno.env.delete("GEMINI_MODEL");
 });
 
 Deno.test("GeminiClient - generate uses default values", async () => {
+  Deno.env.set("GEMINI_MODEL", "test-model");
   const client = new GeminiClient("test-key");
 
   try {
@@ -60,4 +67,5 @@ Deno.test("GeminiClient - generate uses default values", async () => {
       true,
     );
   }
+  Deno.env.delete("GEMINI_MODEL");
 });
