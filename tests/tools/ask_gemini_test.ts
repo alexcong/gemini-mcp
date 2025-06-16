@@ -44,12 +44,12 @@ Deno.test("handleAskGemini - validates temperature range", async () => {
   );
 });
 
-Deno.test("handleAskGemini - validates max_tokens range", async () => {
+Deno.test("handleAskGemini - validates thinking_budget range", async () => {
   await assertRejects(
     () =>
       handleAskGemini({
         prompt: "test",
-        max_tokens: 0,
+        thinking_budget: 127,
       }),
     Error,
   );
@@ -58,7 +58,7 @@ Deno.test("handleAskGemini - validates max_tokens range", async () => {
     () =>
       handleAskGemini({
         prompt: "test",
-        max_tokens: 10000,
+        thinking_budget: 40000,
       }),
     Error,
   );
@@ -72,7 +72,7 @@ Deno.test("handleAskGemini - accepts valid arguments without URLs", async () => 
     await handleAskGemini({
       prompt: "What is artificial intelligence?",
       temperature: 0.7,
-      max_tokens: 2000,
+      thinking_budget: 2000,
     });
   } catch (error) {
     assertEquals(
@@ -94,7 +94,7 @@ Deno.test("handleAskGemini - accepts valid arguments with URLs in prompt", async
     await handleAskGemini({
       prompt: "Analyze these websites and tell me about their content: https://example.com and https://google.com",
       temperature: 0.5,
-      max_tokens: 4000,
+      thinking_budget: 4000,
     });
   } catch (error) {
     assertEquals(

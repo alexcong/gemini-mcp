@@ -61,7 +61,7 @@ Structure your response for clarity and include code examples if relevant.`;
     arguments: {
       prompt,
       temperature: 0.1, // Very low for technical accuracy
-      max_tokens: 4096,
+      thinking_budget: 2048, // Higher budget for complex technical analysis
     },
   };
 }

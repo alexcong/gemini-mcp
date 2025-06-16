@@ -4,6 +4,7 @@ import { buildCurrentEventsPrompt } from "../src/prompts/current-events.ts";
 import { buildTechnicalDocumentationPrompt } from "../src/prompts/technical-documentation.ts";
 import { buildCompareSourcesPrompt } from "../src/prompts/compare-sources.ts";
 import { buildFactCheckPrompt } from "../src/prompts/fact-check.ts";
+import { buildDeepthinkPrompt } from "../src/prompts/deepthink.ts";
 
 Deno.test("buildResearchAnalysisPrompt - generates valid tool call", () => {
   const result = buildResearchAnalysisPrompt({
@@ -16,7 +17,7 @@ Deno.test("buildResearchAnalysisPrompt - generates valid tool call", () => {
   assertEquals(typeof result.arguments.prompt, "string");
   assertEquals(result.arguments.urls, undefined);
   assertEquals(result.arguments.temperature, 0.3);
-  assertEquals(result.arguments.max_tokens, 4096);
+  assertEquals(result.arguments.thinking_budget, 2048);
 });
 
 Deno.test("buildCurrentEventsPrompt - generates valid tool call", () => {
@@ -29,7 +30,7 @@ Deno.test("buildCurrentEventsPrompt - generates valid tool call", () => {
   assertEquals(result.tool, "ask_gemini");
   assertEquals(typeof result.arguments.prompt, "string");
   assertEquals(result.arguments.temperature, 0.2);
-  assertEquals(result.arguments.max_tokens, 3072);
+  assertEquals(result.arguments.thinking_budget, 1024);
 });
 
 Deno.test("buildTechnicalDocumentationPrompt - generates valid tool call", () => {
@@ -43,7 +44,7 @@ Deno.test("buildTechnicalDocumentationPrompt - generates valid tool call", () =>
   assertEquals(typeof result.arguments.prompt, "string");
   assertEquals(result.arguments.urls, undefined);
   assertEquals(result.arguments.temperature, 0.1);
-  assertEquals(result.arguments.max_tokens, 4096);
+  assertEquals(result.arguments.thinking_budget, 2048);
 });
 
 Deno.test("buildCompareSourcesPrompt - generates valid tool call", () => {
@@ -57,7 +58,7 @@ Deno.test("buildCompareSourcesPrompt - generates valid tool call", () => {
   assertEquals(typeof result.arguments.prompt, "string");
   assertEquals(result.arguments.urls, undefined);
   assertEquals(result.arguments.temperature, 0.2);
-  assertEquals(result.arguments.max_tokens, 4096);
+  assertEquals(result.arguments.thinking_budget, 2048);
 });
 
 Deno.test("buildFactCheckPrompt - generates valid tool call", () => {
@@ -69,7 +70,7 @@ Deno.test("buildFactCheckPrompt - generates valid tool call", () => {
   assertEquals(result.tool, "ask_gemini");
   assertEquals(typeof result.arguments.prompt, "string");
   assertEquals(result.arguments.temperature, 0.1);
-  assertEquals(result.arguments.max_tokens, 3072);
+  assertEquals(result.arguments.thinking_budget, undefined);
 });
 
 Deno.test("Prompts handle missing optional arguments", () => {
@@ -87,4 +88,17 @@ Deno.test("Prompts handle missing optional arguments", () => {
     claim: "Vaccines cause autism",
   });
   assertEquals(typeof factResult.arguments.prompt, "string");
+});
+
+Deno.test("buildDeepthinkPrompt - generates valid tool call", () => {
+  const result = buildDeepthinkPrompt({
+    problem: "How can we solve climate change while maintaining economic growth?",
+    context: "Global economic and environmental constraints",
+    approach: "multiple-perspectives",
+  });
+
+  assertEquals(result.tool, "ask_gemini");
+  assertEquals(typeof result.arguments.prompt, "string");
+  assertEquals(result.arguments.temperature, 0.7);
+  assertEquals(result.arguments.thinking_budget, 32768);
 });

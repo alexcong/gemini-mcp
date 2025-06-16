@@ -5,10 +5,10 @@ import { GeminiClient, GeminiRequest } from "../gemini-client.ts";
 const AskGeminiArgsSchema = z.object({
   prompt: z.string().min(1, "Prompt is required"),
   temperature: z.number().min(0).max(2).optional().describe(
-    "Controls randomness in output. Range: 0-2. Default: 0.7",
+    "Controls randomness and creativity. Range: 0-2.  0=deterministic, 0.2=focused/factual, 0.7=balanced (default), 1.0-2.0=creative/diverse",
   ),
-  max_tokens: z.number().min(1).max(8192).optional().describe(
-    "Maximum tokens to generate. Default: 4096",
+  thinking_budget: z.number().min(128).max(32768).optional().describe(
+    "Thinking budget for reasoning. Range: 128-32,768 tokens. If not provided, model automatically decides.",
   ),
 });
 
@@ -29,14 +29,14 @@ export const askGeminiTool: Tool = {
         minimum: 0,
         maximum: 2,
         description:
-          "Controls creativity/randomness. Lower values (0.1-0.3) for factual content, higher values (0.7-1.0) for creative content.",
+          "Controls randomness and creativity. 0=deterministic output, 0.2=focused/factual responses, 0.7=balanced (default), 1.0-2.0=creative/diverse outputs.",
       },
-      max_tokens: {
+      thinking_budget: {
         type: "number",
-        minimum: 1,
-        maximum: 8192,
+        minimum: 128,
+        maximum: 32768,
         description:
-          "Maximum number of tokens to generate. Default is 4096 for comprehensive responses.",
+          "Thinking budget for reasoning in tokens. Range: 128-32,768. If not provided, model automatically decides the optimal budget.",
       },
     },
     required: ["prompt"],
@@ -53,7 +53,7 @@ export async function handleAskGemini(
   const request: GeminiRequest = {
     prompt: validatedArgs.prompt,
     temperature: validatedArgs.temperature,
-    maxTokens: validatedArgs.max_tokens,
+    thinkingBudget: validatedArgs.thinking_budget,
   };
 
   try {

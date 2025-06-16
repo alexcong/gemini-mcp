@@ -9,7 +9,7 @@ const ConfigSchema = z.object({
 export interface GeminiRequest {
   prompt: string;
   temperature?: number;
-  maxTokens?: number;
+  thinkingBudget?: number;
 }
 
 export interface GeminiResponse {
@@ -41,12 +41,21 @@ export class GeminiClient {
         tools: [{ urlContext: {} }, { googleSearch: {} }] as any,
       });
 
+      const generationConfig: any = {
+        temperature: request.temperature ?? 0.7,
+        thinkingConfig: {
+          includeThoughts: true,
+        },
+      };
+
+      // Add thinkingBudget if provided
+      if (request.thinkingBudget !== undefined) {
+        generationConfig.thinkingConfig.thinkingBudget = request.thinkingBudget;
+      }
+
       const result = await model.generateContent({
         contents: [{ role: "user", parts: [{ text: request.prompt }] }],
-        generationConfig: {
-          temperature: request.temperature ?? 0.7,
-          maxOutputTokens: request.maxTokens ?? 4096,
-        },
+        generationConfig,
       });
 
       const response = await result.response;

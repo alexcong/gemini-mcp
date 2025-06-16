@@ -54,7 +54,7 @@ Prioritize the most recent and reliable information with proper source attributi
     arguments: {
       prompt,
       temperature: 0.2, // Very low temperature for news accuracy
-      max_tokens: 3072,
+      thinking_budget: 1024, // Moderate budget for current events synthesis
     },
   };
 }

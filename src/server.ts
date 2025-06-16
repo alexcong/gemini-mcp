@@ -15,6 +15,7 @@ import { currentEventsPrompt, buildCurrentEventsPrompt } from "./prompts/current
 import { technicalDocumentationPrompt, buildTechnicalDocumentationPrompt } from "./prompts/technical-documentation.ts";
 import { compareSourcesPrompt, buildCompareSourcesPrompt } from "./prompts/compare-sources.ts";
 import { factCheckPrompt, buildFactCheckPrompt } from "./prompts/fact-check.ts";
+import { deepthinkPrompt, buildDeepthinkPrompt } from "./prompts/deepthink.ts";
 
 class GeminiMcpServer {
   private server: Server;
@@ -80,6 +81,7 @@ class GeminiMcpServer {
           technicalDocumentationPrompt,
           compareSourcesPrompt,
           factCheckPrompt,
+          deepthinkPrompt,
         ],
       };
     });
@@ -104,6 +106,9 @@ class GeminiMcpServer {
             break;
           case "fact_check":
             toolCall = buildFactCheckPrompt(args || {});
+            break;
+          case "deepthink":
+            toolCall = buildDeepthinkPrompt(args || {});
             break;
           default:
             throw new Error(`Unknown prompt: ${name}`);

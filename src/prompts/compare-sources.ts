@@ -61,7 +61,7 @@ Structure your response with clear sections for each source and comparative anal
     arguments: {
       prompt,
       temperature: 0.2, // Low temperature for objective comparison
-      max_tokens: 4096,
+      thinking_budget: 2048, // Higher budget for complex comparative analysis
     },
   };
 }

@@ -58,7 +58,7 @@ Structure your response with clear sections and cite all sources.`;
     arguments: {
       prompt,
       temperature: 0.3, // Lower temperature for factual research
-      max_tokens: 4096,
+      thinking_budget: 2048, // Higher budget for comprehensive analysis
     },
   };
 }

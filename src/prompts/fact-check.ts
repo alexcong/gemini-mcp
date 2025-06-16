@@ -46,7 +46,7 @@ Use current, authoritative sources and be explicit about any limitations in the 
     arguments: {
       prompt,
       temperature: 0.1, // Lowest temperature for factual accuracy
-      max_tokens: 3072,
+      // No thinking_budget - let model decide for focused fact-checking
     },
   };
 }

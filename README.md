@@ -6,7 +6,7 @@ capabilities as tools. Built with Deno and TypeScript.
 ## Features
 
 - **ask_gemini**: Unified AI assistant powered by Gemini 2.5 Pro with built-in Google Search and URL analysis capabilities
-- **5 MCP Prompts**: Pre-configured workflows for common tasks, optimized for Claude Desktop integration
+- **6 MCP Prompts**: Pre-configured workflows for common tasks, optimized for Claude Desktop integration
 
 ## Prerequisites
 
@@ -102,8 +102,12 @@ The unified AI assistant powered by Gemini 2.5 Pro with built-in Google Search a
 **Parameters:**
 
 - `prompt` (required): Your question or request. Include URLs directly in the text for analysis.
-- `temperature` (optional): Controls creativity/randomness (0-2, default: 0.7)
-- `max_tokens` (optional): Maximum tokens to generate (1-8192, default: 4096)
+- `temperature` (optional): Controls randomness and creativity (0-2, default: 0.7)
+  - 0 = deterministic output
+  - 0.2 = focused/factual responses  
+  - 0.7 = balanced (default)
+  - 1.0-2.0 = creative/diverse outputs
+- `thinking_budget` (optional): Thinking budget for reasoning (128-32,768 tokens). If not provided, model automatically decides the optimal budget.
 
 **Example:**
 
@@ -113,7 +117,7 @@ The unified AI assistant powered by Gemini 2.5 Pro with built-in Google Search a
   "arguments": {
     "prompt": "What are the latest developments in quantum computing? Please analyze this paper: https://arxiv.org/abs/2301.01234",
     "temperature": 0.5,
-    "max_tokens": 4000
+    "thinking_budget": 2048
   }
 }
 ```
@@ -121,8 +125,8 @@ The unified AI assistant powered by Gemini 2.5 Pro with built-in Google Search a
 **Capabilities:**
 - 🔍 Automatically searches the web for current information
 - 📄 Analyzes URLs mentioned in your prompt text
-- 🧠 Uses Gemini 2.5 Flash with urlContext and googleSearch tools
-- 📚 Provides comprehensive, well-sourced answers
+- 🧠 Uses Gemini 2.5 Pro with thinking capabilities, urlContext and googleSearch tools
+- 📚 Provides comprehensive, well-sourced answers with enhanced reasoning
 
 ## MCP Prompts (Claude Desktop Integration)
 
@@ -153,6 +157,12 @@ Verify claims and statements with current information and reliable sources.
 - **Arguments**: `claim` (required), `context` (optional)
 - **Use case**: Information verification, claim validation, accuracy checking
 
+### /deepthink
+Deep reasoning and analysis for complex problems using maximum thinking capacity.
+- **Arguments**: `problem` (required), `context` (optional), `approach` (optional)
+- **Features**: Uses maximum thinking budget (32,768 tokens) with balanced temperature (0.7)
+- **Use case**: Complex decision-making, strategic planning, ethical dilemmas, multi-faceted problem analysis
+
 ## Project Structure
 
 ```
@@ -166,7 +176,8 @@ src/
     ├── current-events.ts       # News and current events
     ├── technical-documentation.ts # Technical docs analysis
     ├── compare-sources.ts      # Source comparison
-    └── fact-check.ts           # Fact verification
+    ├── fact-check.ts           # Fact verification
+    └── deepthink.ts            # Deep reasoning for complex problems
 tests/
 ├── server_test.ts              # Server and prompt tests
 ├── gemini_client_test.ts       # API client tests
@@ -283,6 +294,7 @@ After configuration, restart Claude Desktop. The MCP prompts will appear as slas
 - `/technical_documentation` - Technical docs analysis
 - `/compare_sources` - Multi-source comparison
 - `/fact_check` - Claim verification
+- `/deepthink` - Deep reasoning for complex problems
 
 
 ## Contributing

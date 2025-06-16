@@ -61,8 +61,8 @@ tests/
 ### ask_gemini
 
 - **Purpose**: High-quality text generation using Gemini 2.5 Pro
-- **Parameters**: `prompt` (required), `temperature` (0-2), `max_tokens`
-  (1-8192)
+- **Parameters**: `prompt` (required), `temperature` (0-2), `thinking_budget`
+  (128-32768)
 
 ### gemini_search
 
@@ -75,6 +75,12 @@ tests/
 - **Purpose**: Analyze web page content (max 20 URLs)
 - **Parameters**: `urls` (required array), `question` (required),
   `analysis_type` (optional)
+
+### deepthink
+
+- **Purpose**: Deep reasoning and analysis for complex problems using maximum thinking capacity
+- **Parameters**: `problem` (required), `context` (optional), `approach` (optional)
+- **Features**: Uses maximum thinking budget (32,768 tokens) with balanced temperature (0.7)
 
 ## Testing
 
