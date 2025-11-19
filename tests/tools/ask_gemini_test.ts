@@ -1,8 +1,5 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import {
-  askGeminiTool,
-  handleAskGemini,
-} from "../../src/tools/ask-gemini.ts";
+import { askGeminiTool, handleAskGemini } from "../../src/tools/ask-gemini.ts";
 
 Deno.test("askGeminiTool - has correct structure", () => {
   assertEquals(askGeminiTool.name, "ask_gemini");
@@ -23,47 +20,6 @@ Deno.test("handleAskGemini - validates required prompt", async () => {
   );
 });
 
-
-Deno.test("handleAskGemini - validates temperature range", async () => {
-  await assertRejects(
-    () =>
-      handleAskGemini({
-        prompt: "test",
-        temperature: -1,
-      }),
-    Error,
-  );
-
-  await assertRejects(
-    () =>
-      handleAskGemini({
-        prompt: "test",
-        temperature: 3,
-      }),
-    Error,
-  );
-});
-
-Deno.test("handleAskGemini - validates thinking_budget range", async () => {
-  await assertRejects(
-    () =>
-      handleAskGemini({
-        prompt: "test",
-        thinking_budget: 127,
-      }),
-    Error,
-  );
-
-  await assertRejects(
-    () =>
-      handleAskGemini({
-        prompt: "test",
-        thinking_budget: 40000,
-      }),
-    Error,
-  );
-});
-
 Deno.test("handleAskGemini - accepts valid arguments without URLs", async () => {
   Deno.env.set("GEMINI_API_KEY", "test-key");
   Deno.env.set("GEMINI_MODEL", "test-model");
@@ -71,8 +27,6 @@ Deno.test("handleAskGemini - accepts valid arguments without URLs", async () => 
   try {
     await handleAskGemini({
       prompt: "What is artificial intelligence?",
-      temperature: 0.7,
-      thinking_budget: 2000,
     });
   } catch (error) {
     assertEquals(
@@ -92,9 +46,8 @@ Deno.test("handleAskGemini - accepts valid arguments with URLs in prompt", async
 
   try {
     await handleAskGemini({
-      prompt: "Analyze these websites and tell me about their content: https://example.com and https://google.com",
-      temperature: 0.5,
-      thinking_budget: 4000,
+      prompt:
+        "Analyze these websites and tell me about their content: https://example.com and https://google.com",
     });
   } catch (error) {
     assertEquals(

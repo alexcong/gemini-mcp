@@ -2,20 +2,12 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
-  ListToolsRequestSchema,
-  ListPromptsRequestSchema,
   GetPromptRequestSchema,
+  ListPromptsRequestSchema,
+  ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
 import { askGeminiTool, handleAskGemini } from "./tools/ask-gemini.ts";
-
-// Import prompts
-import { researchAnalysisPrompt, buildResearchAnalysisPrompt } from "./prompts/research-analysis.ts";
-import { currentEventsPrompt, buildCurrentEventsPrompt } from "./prompts/current-events.ts";
-import { technicalDocumentationPrompt, buildTechnicalDocumentationPrompt } from "./prompts/technical-documentation.ts";
-import { compareSourcesPrompt, buildCompareSourcesPrompt } from "./prompts/compare-sources.ts";
-import { factCheckPrompt, buildFactCheckPrompt } from "./prompts/fact-check.ts";
-import { deepthinkPrompt, buildDeepthinkPrompt } from "./prompts/deepthink.ts";
 
 class GeminiMcpServer {
   private server: Server;
@@ -24,7 +16,7 @@ class GeminiMcpServer {
     this.server = new Server(
       {
         name: "gemini-mcp-server",
-        version: "1.0.0",
+        version: "2.0.0",
       },
       {
         capabilities: {
@@ -75,60 +67,12 @@ class GeminiMcpServer {
     // Prompts
     this.server.setRequestHandler(ListPromptsRequestSchema, () => {
       return {
-        prompts: [
-          researchAnalysisPrompt,
-          currentEventsPrompt,
-          technicalDocumentationPrompt,
-          compareSourcesPrompt,
-          factCheckPrompt,
-          deepthinkPrompt,
-        ],
+        prompts: [],
       };
     });
 
-    this.server.setRequestHandler(GetPromptRequestSchema, async (request) => {
-      const { name, arguments: args } = request.params;
-
-      try {
-        let toolCall;
-        switch (name) {
-          case "research_analysis":
-            toolCall = buildResearchAnalysisPrompt(args || {});
-            break;
-          case "current_events":
-            toolCall = buildCurrentEventsPrompt(args || {});
-            break;
-          case "technical_documentation":
-            toolCall = buildTechnicalDocumentationPrompt(args || {});
-            break;
-          case "compare_sources":
-            toolCall = buildCompareSourcesPrompt(args || {});
-            break;
-          case "fact_check":
-            toolCall = buildFactCheckPrompt(args || {});
-            break;
-          case "deepthink":
-            toolCall = buildDeepthinkPrompt(args || {});
-            break;
-          default:
-            throw new Error(`Unknown prompt: ${name}`);
-        }
-
-        return {
-          description: `Prompt for ${name}`,
-          messages: [
-            {
-              role: "user",
-              content: {
-                type: "text",
-                text: `Use the ${toolCall.tool} tool with these arguments: ${JSON.stringify(toolCall.arguments, null, 2)}`,
-              },
-            },
-          ],
-        };
-      } catch (error) {
-        throw new Error(`Failed to generate prompt: ${error instanceof Error ? error.message : String(error)}`);
-      }
+    this.server.setRequestHandler(GetPromptRequestSchema, () => {
+      throw new Error("Prompt support is not available in this version.");
     });
   }
 
@@ -137,7 +81,11 @@ class GeminiMcpServer {
     await this.server.connect(transport);
 
     const hasApiKey = !!Deno.env.get("GEMINI_API_KEY");
-    console.error(`Gemini MCP Server running on stdio (API Key: ${hasApiKey ? "configured" : "NOT SET"})`);
+    console.error(
+      `Gemini MCP Server running on stdio (API Key: ${
+        hasApiKey ? "configured" : "NOT SET"
+      })`,
+    );
   }
 }
 

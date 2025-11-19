@@ -19,8 +19,6 @@ Deno.test("GeminiClient - generate accepts valid request without URLs", async ()
   try {
     await client.generate({
       prompt: "What is machine learning?",
-      temperature: 0.7,
-      thinkingBudget: 2000,
     });
   } catch (error) {
     assertEquals(
@@ -38,9 +36,8 @@ Deno.test("GeminiClient - generate accepts valid request with URLs in prompt", a
 
   try {
     await client.generate({
-      prompt: "Analyze these websites: https://example.com and https://openai.com",
-      temperature: 0.5,
-      thinkingBudget: 4000,
+      prompt:
+        "Analyze these websites: https://example.com and https://openai.com",
     });
   } catch (error) {
     assertEquals(

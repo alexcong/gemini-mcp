@@ -24,7 +24,8 @@ Google Gemini AI tools:
 
 ## Environment Setup
 
-**Required**: Set both `GEMINI_API_KEY` and `GEMINI_MODEL` environment variables before running:
+**Required**: Set both `GEMINI_API_KEY` and `GEMINI_MODEL` environment variables
+before running:
 
 ```bash
 export GEMINI_API_KEY=your_api_key_here
@@ -78,9 +79,12 @@ tests/
 
 ### deepthink
 
-- **Purpose**: Deep reasoning and analysis for complex problems using maximum thinking capacity
-- **Parameters**: `problem` (required), `context` (optional), `approach` (optional)
-- **Features**: Uses maximum thinking budget (32,768 tokens) with balanced temperature (0.7)
+- **Purpose**: Deep reasoning and analysis for complex problems using maximum
+  thinking capacity
+- **Parameters**: `problem` (required), `context` (optional), `approach`
+  (optional)
+- **Features**: Uses maximum thinking budget (32,768 tokens) with balanced
+  temperature (0.7)
 
 ## Testing
 

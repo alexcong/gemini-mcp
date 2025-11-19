@@ -1,15 +1,10 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { GeminiClient, GeminiRequest } from "../gemini-client.ts";
+import { GeminiClient } from "../gemini-client.ts";
+import type { GeminiRequest } from "../gemini-client.ts";
 
 const AskGeminiArgsSchema = z.object({
   prompt: z.string().min(1, "Prompt is required"),
-  temperature: z.number().min(0).max(2).optional().describe(
-    "Controls randomness and creativity. Range: 0-2.  0=deterministic, 0.2=focused/factual, 0.7=balanced (default), 1.0-2.0=creative/diverse",
-  ),
-  thinking_budget: z.number().min(128).max(32768).optional().describe(
-    "Thinking budget for reasoning. Range: 128-32,768 tokens. If not provided, model automatically decides.",
-  ),
 });
 
 export const askGeminiTool: Tool = {
@@ -23,20 +18,6 @@ export const askGeminiTool: Tool = {
         type: "string",
         description:
           "Your question or request. Include any URLs directly in the text that you want analyzed. The AI will automatically search for current information and analyze any URLs mentioned in your prompt.",
-      },
-      temperature: {
-        type: "number",
-        minimum: 0,
-        maximum: 2,
-        description:
-          "Controls randomness and creativity. 0=deterministic output, 0.2=focused/factual responses, 0.7=balanced (default), 1.0-2.0=creative/diverse outputs.",
-      },
-      thinking_budget: {
-        type: "number",
-        minimum: 128,
-        maximum: 32768,
-        description:
-          "Thinking budget for reasoning in tokens. Range: 128-32,768. If not provided, model automatically decides the optimal budget.",
       },
     },
     required: ["prompt"],
@@ -52,8 +33,6 @@ export async function handleAskGemini(
 
   const request: GeminiRequest = {
     prompt: validatedArgs.prompt,
-    temperature: validatedArgs.temperature,
-    thinkingBudget: validatedArgs.thinking_budget,
   };
 
   try {

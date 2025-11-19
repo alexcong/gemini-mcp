@@ -5,8 +5,8 @@ capabilities as tools. Built with Deno and TypeScript.
 
 ## Features
 
-- **ask_gemini**: Unified AI assistant powered by Gemini 2.5 Pro with built-in Google Search and URL analysis capabilities
-- **6 MCP Prompts**: Pre-configured workflows for common tasks, optimized for Claude Desktop integration
+- **ask_gemini**: Unified AI assistant powered by Gemini 3 Pro with built-in
+  Google Search and URL analysis capabilities
 
 ## Prerequisites
 
@@ -17,7 +17,8 @@ capabilities as tools. Built with Deno and TypeScript.
 
 ### Option 1: Use JSR Package (Recommended)
 
-The easiest way is to use the published JSR package directly in your Claude Desktop configuration:
+The easiest way is to use the published JSR package directly in your Claude
+Desktop configuration:
 
 ```bash
 # No installation needed! Use jsr:@cong/gemini-mcp directly in your Claude config
@@ -36,7 +37,7 @@ cd gemini-mcp
 
 ```bash
 export GEMINI_API_KEY=your_api_key_here
-export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
+export GEMINI_MODEL=gemini-3-pro-preview
 ```
 
 ## Usage
@@ -46,7 +47,7 @@ export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
 ```bash
 # Set your environment variables first
 export GEMINI_API_KEY=your_api_key_here
-export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
+export GEMINI_MODEL=gemini-3-pro-preview
 
 # Development mode (with watch)
 deno task dev
@@ -57,12 +58,13 @@ deno task start
 
 ### Testing with MCP Inspector
 
-To test the server with the MCP Inspector, make sure your environment variables are set:
+To test the server with the MCP Inspector, make sure your environment variables
+are set:
 
 ```bash
 # Set environment variables in your shell
 export GEMINI_API_KEY=your_api_key_here
-export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
+export GEMINI_MODEL=gemini-3-pro-preview
 
 # Install MCP Inspector if you haven't already
 npm install -g @modelcontextprotocol/inspector
@@ -71,7 +73,8 @@ npm install -g @modelcontextprotocol/inspector
 npx @modelcontextprotocol/inspector src/server.ts
 ```
 
-**Important**: The environment variables must be set in the same shell where you run the MCP Inspector.
+**Important**: The environment variables must be set in the same shell where you
+run the MCP Inspector.
 
 ### Run Tests
 
@@ -97,17 +100,13 @@ deno lint
 
 ### ask_gemini
 
-The unified AI assistant powered by Gemini 2.5 Pro with built-in Google Search and URL analysis capabilities.
+The unified AI assistant powered by Gemini 3 Pro with built-in Google Search and
+URL analysis capabilities.
 
 **Parameters:**
 
-- `prompt` (required): Your question or request. Include URLs directly in the text for analysis.
-- `temperature` (optional): Controls randomness and creativity (0-2, default: 0.7)
-  - 0 = deterministic output
-  - 0.2 = focused/factual responses  
-  - 0.7 = balanced (default)
-  - 1.0-2.0 = creative/diverse outputs
-- `thinking_budget` (optional): Thinking budget for reasoning (128-32,768 tokens). If not provided, model automatically decides the optimal budget.
+- `prompt` (required): Your question or request. Include URLs directly in the
+  text for analysis.
 
 **Example:**
 
@@ -115,77 +114,18 @@ The unified AI assistant powered by Gemini 2.5 Pro with built-in Google Search a
 {
   "name": "ask_gemini",
   "arguments": {
-    "prompt": "What are the latest developments in quantum computing? Please analyze this paper: https://arxiv.org/abs/2301.01234",
-    "temperature": 0.5,
-    "thinking_budget": 2048
+    "prompt": "What are the latest developments in quantum computing? Please analyze this paper: https://arxiv.org/abs/2301.01234"
   }
 }
 ```
 
 **Capabilities:**
+
 - 🔍 Automatically searches the web for current information
 - 📄 Analyzes URLs mentioned in your prompt text
-- 🧠 Uses Gemini 2.5 Pro with thinking capabilities, urlContext and googleSearch tools
+- 🧠 Uses Gemini 3 Pro with thinking capabilities, urlContext and googleSearch
+  tools
 - 📚 Provides comprehensive, well-sourced answers with enhanced reasoning
-
-## MCP Prompts (Claude Desktop Integration)
-
-Pre-configured workflows that appear as slash commands in Claude Desktop:
-
-### /research_analysis
-Research a topic comprehensively with automatic web search and optional URL analysis.
-- **Arguments**: `topic` (required), `urls` (optional), `focus_areas` (optional)
-- **Use case**: Academic research, market analysis, technology investigations
-
-### /current_events  
-Get up-to-date information on recent developments and news.
-- **Arguments**: `topic` (required), `time_period` (optional), `region` (optional)
-- **Use case**: Breaking news, recent developments, current status updates
-
-### /technical_documentation
-Analyze technical documentation and provide clear explanations.
-- **Arguments**: `documentation_urls` (required), `question` (required), `complexity_level` (optional)
-- **Use case**: API documentation, RFCs, technical specifications
-
-### /compare_sources
-Compare information across multiple sources and provide analysis.
-- **Arguments**: `topic` (required), `source_urls` (required), `comparison_criteria` (optional)
-- **Use case**: Research validation, source comparison, bias analysis
-
-### /fact_check
-Verify claims and statements with current information and reliable sources.
-- **Arguments**: `claim` (required), `context` (optional)
-- **Use case**: Information verification, claim validation, accuracy checking
-
-### /deepthink
-Deep reasoning and analysis for complex problems using maximum thinking capacity.
-- **Arguments**: `problem` (required), `context` (optional), `approach` (optional)
-- **Features**: Uses maximum thinking budget (32,768 tokens) with balanced temperature (0.7)
-- **Use case**: Complex decision-making, strategic planning, ethical dilemmas, multi-faceted problem analysis
-
-## Project Structure
-
-```
-src/
-├── server.ts                    # Main MCP server implementation
-├── gemini-client.ts            # Google Gemini API client wrapper
-├── tools/
-│   └── ask-gemini.ts           # Unified AI tool (Gemini 2.5 Pro + Search + URLs)
-└── prompts/                    # MCP prompts for Claude Desktop
-    ├── research-analysis.ts    # Research workflow
-    ├── current-events.ts       # News and current events
-    ├── technical-documentation.ts # Technical docs analysis
-    ├── compare-sources.ts      # Source comparison
-    ├── fact-check.ts           # Fact verification
-    └── deepthink.ts            # Deep reasoning for complex problems
-tests/
-├── server_test.ts              # Server and prompt tests
-├── gemini_client_test.ts       # API client tests
-├── gemini_client_enhanced_test.ts # Enhanced client tests
-├── prompts_test.ts             # Prompt logic tests
-└── tools/
-    └── ask_gemini_test.ts      # Tool tests
-```
 
 ## Dependencies
 
@@ -218,15 +158,16 @@ If you get environment variable errors:
    echo $GEMINI_MODEL
    ```
 
-2. **For MCP Inspector testing**, ensure both variables are set in the same terminal:
+2. **For MCP Inspector testing**, ensure both variables are set in the same
+   terminal:
    ```bash
    export GEMINI_API_KEY=your_api_key_here
-   export GEMINI_MODEL=gemini-2.5-pro-preview-06-05
+   export GEMINI_MODEL=gemini-3-pro-preview
    npx @modelcontextprotocol/inspector src/server.ts
    ```
 
-3. **Check the server logs**: When the server starts, it will show `(API Key: configured)` to confirm your key is loaded.
-
+3. **Check the server logs**: When the server starts, it will show
+   `(API Key: configured)` to confirm your key is loaded.
 
 ## Support
 
@@ -241,6 +182,7 @@ To use this MCP server with Claude Desktop, add it to your Claude configuration:
 ### macOS/Linux/Windows
 
 Edit your Claude configuration file:
+
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
@@ -257,7 +199,7 @@ Edit your Claude configuration file:
       ],
       "env": {
         "GEMINI_API_KEY": "your_api_key_here",
-        "GEMINI_MODEL": "gemini-2.5-pro-preview-06-05"
+        "GEMINI_MODEL": "gemini-3-pro-preview"
       }
     }
   }
@@ -281,21 +223,12 @@ If you're running from source code:
       ],
       "env": {
         "GEMINI_API_KEY": "your_api_key_here",
-        "GEMINI_MODEL": "gemini-2.5-pro-preview-06-05"
+        "GEMINI_MODEL": "gemini-3-pro-preview"
       }
     }
   }
 }
 ```
-
-After configuration, restart Claude Desktop. The MCP prompts will appear as slash commands:
-- `/research_analysis` - Comprehensive research workflows
-- `/current_events` - Latest news and developments
-- `/technical_documentation` - Technical docs analysis
-- `/compare_sources` - Multi-source comparison
-- `/fact_check` - Claim verification
-- `/deepthink` - Deep reasoning for complex problems
-
 
 ## Contributing
 

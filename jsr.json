@@ -1,25 +1,24 @@
 {
   "name": "@cong/gemini-mcp",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Model Context Protocol server for Google Gemini AI with web search and URL analysis capabilities",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cong/gemini-mcp.git"
+    "url": "https://github.com/alexcong/gemini-mcp.git"
   },
   "keywords": [
     "mcp",
-    "model-context-protocol", 
+    "model-context-protocol",
     "gemini",
     "ai",
-    "claude",
     "google",
     "search",
     "deno"
   ],
   "author": {
-    "name": "Cong",
-    "url": "https://github.com/cong"
+    "name": "Alex Cong",
+    "url": "https://github.com/alexcong"
   },
   "exports": "./src/server.ts"
 }

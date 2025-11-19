@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { GenerativeModel, Tool } from "@google/generative-ai";
 import { z } from "zod";
 
 const ConfigSchema = z.object({
@@ -6,10 +7,12 @@ const ConfigSchema = z.object({
   model: z.string().min(1, "Model name is required"),
 });
 
+const GenerateRequestSchema = z.object({
+  prompt: z.string().min(1, "Prompt is required"),
+});
+
 export interface GeminiRequest {
   prompt: string;
-  temperature?: number;
-  thinkingBudget?: number;
 }
 
 export interface GeminiResponse {
@@ -19,9 +22,28 @@ export interface GeminiResponse {
   };
 }
 
+interface UrlContextMetadataItem {
+  url?: string;
+}
+
+type UrlContextMetadata = UrlContextMetadataItem | UrlContextMetadataItem[];
+
+interface GroundingChunk {
+  web?: {
+    uri?: string;
+  };
+}
+
+interface CandidateMetadata {
+  urlContextMetadata?: UrlContextMetadata;
+  groundingMetadata?: {
+    groundingChunks?: GroundingChunk[];
+  };
+}
+
 export class GeminiClient {
   private genAI: GoogleGenerativeAI;
-  private model: string;
+  private model: GenerativeModel;
 
   constructor(apiKey?: string) {
     const config = ConfigSchema.parse({
@@ -30,59 +52,51 @@ export class GeminiClient {
     });
 
     this.genAI = new GoogleGenerativeAI(config.apiKey);
-    this.model = config.model;
+    this.model = this.genAI.getGenerativeModel({ model: config.model });
   }
 
   async generate(request: GeminiRequest): Promise<GeminiResponse> {
+    const validatedRequest = GenerateRequestSchema.parse(request);
     try {
-      const model = this.genAI.getGenerativeModel({
-        model: this.model,
-        // deno-lint-ignore no-explicit-any
-        tools: [{ urlContext: {} }, { googleSearch: {} }] as any,
-      });
+      const tools = [
+        { googleSearch: {} },
+        { urlContext: {} },
+      ] as unknown as Tool[]; // Types don't yet include these MCP tools
 
-      const generationConfig: any = {
-        temperature: request.temperature ?? 0.7,
-      };
-
-      // Add thinkingBudget if provided
-      if (request.thinkingBudget !== undefined) {
-        generationConfig.thinkingConfig = {
-          thinkingBudget: request.thinkingBudget,
-        };
-      }
-
-      const result = await model.generateContent({
-        contents: [{ role: "user", parts: [{ text: request.prompt }] }],
-        generationConfig,
+      const result = await this.model.generateContent({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: validatedRequest.prompt }],
+          },
+        ],
+        tools,
       });
 
       const response = await result.response;
 
       const candidate = response.candidates?.[0];
-      // deno-lint-ignore no-explicit-any
-      const metadata = candidate as any;
+      const metadata = candidate as CandidateMetadata | undefined;
 
       // Extract sources from both URL context and grounding metadata
       const sources: string[] = [];
 
       // URL context sources
-      if (metadata?.urlContextMetadata) {
-        if (Array.isArray(metadata.urlContextMetadata)) {
-          metadata.urlContextMetadata.forEach((item: any) => {
+      const urlContextMetadata = metadata?.urlContextMetadata;
+      if (urlContextMetadata) {
+        if (Array.isArray(urlContextMetadata)) {
+          urlContextMetadata.forEach((item) => {
             if (item?.url) sources.push(item.url);
           });
-        } else if (metadata.urlContextMetadata.url) {
-          sources.push(metadata.urlContextMetadata.url);
+        } else if (urlContextMetadata.url) {
+          sources.push(urlContextMetadata.url);
         }
       }
 
       // Grounding metadata sources
-      if (metadata?.groundingMetadata?.groundingChunks) {
-        metadata.groundingMetadata.groundingChunks.forEach((chunk: any) => {
-          if (chunk?.web?.uri) sources.push(chunk.web.uri);
-        });
-      }
+      metadata?.groundingMetadata?.groundingChunks?.forEach((chunk) => {
+        if (chunk?.web?.uri) sources.push(chunk.web.uri);
+      });
 
       return {
         text: response.text(),
